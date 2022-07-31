@@ -31,8 +31,7 @@ This project allows the beekeepers not to have to wear a special suit and move e
 ## 💻 Technologies
 
 ### Frontend ([Repository](https://github.com/pedro742k2/bee-project))
-  - React
-  - chart.js
+  - React.js
 
 ### Backend
   - Node.js
