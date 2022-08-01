@@ -17,9 +17,9 @@ This project allows the beekeepers not to have to wear a special suit and move e
   
 ### 🐋 If you want to test it locally using Docker:
   - Clone the repository;
-  - Create a ".env" file with environment variables on the root directory. The env. variables are the following:
-  
-    - ![imagem](https://user-images.githubusercontent.com/54741310/182039563-743b9c08-efa4-4f50-982a-b21312c98670.png)
+  - Create a ".env" file with environment variables in the root directory. The env. variables are the following:
+
+    - ![imagem](https://user-images.githubusercontent.com/54741310/182219237-46602423-c888-4611-80d3-89ce29927498.png)
     - Where `JWT_SECRET` is the secret string of the Json Web Token, for authentication purposes and `DB_*` are the database connection and credentials.
     
   - Run `docker-compose up --build` to run the container.
