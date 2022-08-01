@@ -16,7 +16,7 @@ const handleLogin = (db, bcrypt) => (req, res) => {
           if (!result)
             return res.status(400).json({ error: "Wrong credentials" });
 
-          const token = signToken(data[0].user_id);
+          const token = signToken(data[0].user_id, "1d");
 
           return res.json({
             token,

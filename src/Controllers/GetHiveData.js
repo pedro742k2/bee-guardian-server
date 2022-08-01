@@ -1,3 +1,5 @@
+const { verifyHiveAccess } = require("../Validations/verifyHiveAccess");
+
 const getWeeksAverage = (
   db,
   hive_id,
@@ -6,26 +8,52 @@ const getWeeksAverage = (
   res
 ) =>
   db
-    .select(
-      db.raw(
-        `DATE_PART('week', reading_date) AS week, AVG(weight) AS avg_weight, AVG(internal_temperature) AS avg_int_temp, AVG(external_temperature) AS avg_ext_temp, AVG(humidity) as avg_humidity, AVG(battery) as avg_battery, AVG (solar_panel_voltage) AS avg_spv, COUNT(reading_id) as reading_numbers`
-      )
-    )
-    .from("hive_readings")
-    .where("hive_id", hive_id)
-    .whereRaw(
-      `reading_date between ${formatedTargetedDate} - interval '${timeCondition}' and ${formatedTargetedDate}`
-    )
-    .groupBy("week")
-    .orderBy("week")
-    .then((data) => {
-      if (!data[0]) return res.json({ error: "No readings available!" });
+    .transaction((trx) =>
+      trx
+        .select(
+          db.raw(
+            `DATE_PART('week', reading_date) AS week, AVG(weight) AS avg_weight, AVG(internal_temperature) AS avg_int_temp, AVG(external_temperature) AS avg_ext_temp, AVG(humidity) as avg_humidity, AVG(battery) as avg_battery, AVG (solar_panel_voltage) AS avg_spv, COUNT(reading_id) as reading_numbers`
+          )
+        )
+        .from("hive_readings")
+        .where("hive_id", hive_id)
+        .whereRaw(
+          `reading_date between ${formatedTargetedDate} - interval '${timeCondition}' and ${formatedTargetedDate}`
+        )
+        .groupBy("week")
+        .orderBy("week")
+        .then((data) =>
+          trx
+            .select(
+              "internal_temperature",
+              "external_temperature",
+              "humidity",
+              "weight",
+              "solar_panel_voltage",
+              "battery",
+              "reading_date"
+            )
+            .from("hive_readings")
+            .where("hive_id", hive_id)
+            .orderBy("reading_date")
+            .limit(1)
+            .then((lastData) => {
+              if (!data[0] && !lastData[0])
+                return res.json({ error: "No readings available!" });
 
-      return res.json(data);
-    })
+              return res.json({ data, lastData });
+            })
+            .catch((error) => {
+              console.log(error);
+              return res.status(500).json({ error: "Internal server error." });
+            })
+        )
+        .then(trx.commit)
+        .catch(trx.rollback)
+    )
     .catch((error) => {
       console.log(error);
-      res.status(500).json({ error: "Internal server error." });
+      return res.status(500).json({ error: "Internal server error." });
     });
 
 const getDaysAveraged = (
@@ -36,26 +64,52 @@ const getDaysAveraged = (
   res
 ) =>
   db
-    .select(
-      db.raw(
-        "DATE_TRUNC('day', reading_date) AS day, AVG(weight) AS avg_weight, AVG(internal_temperature) AS avg_int_temp, AVG(external_temperature) AS avg_ext_temp, AVG(humidity) as avg_humidity, AVG(battery) as avg_battery, AVG (solar_panel_voltage) AS avg_spv, COUNT(reading_id) as reading_numbers"
-      )
-    )
-    .from("hive_readings")
-    .where("hive_id", hive_id)
-    .whereRaw(
-      `reading_date between ${formatedTargetedDate} - interval '${timeCondition}' and ${formatedTargetedDate}`
-    )
-    .groupBy("day")
-    .orderBy("day")
-    .then((data) => {
-      if (!data[0]) return res.json({ error: "No readings available!" });
+    .transaction((trx) =>
+      trx
+        .select(
+          db.raw(
+            "DATE_TRUNC('day', reading_date) AS day, AVG(weight) AS avg_weight, AVG(internal_temperature) AS avg_int_temp, AVG(external_temperature) AS avg_ext_temp, AVG(humidity) as avg_humidity, AVG(battery) as avg_battery, AVG (solar_panel_voltage) AS avg_spv, COUNT(reading_id) as reading_numbers"
+          )
+        )
+        .from("hive_readings")
+        .where("hive_id", hive_id)
+        .whereRaw(
+          `reading_date between ${formatedTargetedDate} - interval '${timeCondition}' and ${formatedTargetedDate}`
+        )
+        .groupBy("day")
+        .orderBy("day")
+        .then((data) =>
+          trx
+            .select(
+              "internal_temperature",
+              "external_temperature",
+              "humidity",
+              "weight",
+              "solar_panel_voltage",
+              "battery",
+              "reading_date"
+            )
+            .from("hive_readings")
+            .where("hive_id", hive_id)
+            .orderBy("reading_date")
+            .limit(1)
+            .then((lastData) => {
+              if (!data[0] && !lastData[0])
+                return res.json({ error: "No readings available!" });
 
-      return res.json(data);
-    })
+              return res.json({ data, lastData });
+            })
+            .catch((error) => {
+              console.log(error);
+              return res.status(500).json({ error: "Internal server error." });
+            })
+        )
+        .then(trx.commit)
+        .catch(trx.rollback)
+    )
     .catch((error) => {
       console.log(error);
-      res.status(500).json({ error: "Internal server error." });
+      return res.status(500).json({ error: "Internal server error." });
     });
 
 const getDataFromLastHours = (
@@ -66,32 +120,58 @@ const getDataFromLastHours = (
   res
 ) =>
   db
-    .select(
-      "internal_temperature",
-      "external_temperature",
-      "humidity",
-      "weight",
-      "solar_panel_voltage",
-      "battery",
-      "reading_date"
-    )
-    .from("hive_readings")
-    .where("hive_id", hive_id)
-    .whereRaw(
-      `reading_date between ${formatedTargetedDate} - interval '${timeCondition}' and ${formatedTargetedDate}`
-    )
-    .orderBy("reading_date")
-    .then((data) => {
-      if (!data[0]) return res.json({ error: "No readings available!" });
+    .transaction((trx) =>
+      trx
+        .select(
+          "internal_temperature",
+          "external_temperature",
+          "humidity",
+          "weight",
+          "solar_panel_voltage",
+          "battery",
+          "reading_date"
+        )
+        .from("hive_readings")
+        .where("hive_id", hive_id)
+        .whereRaw(
+          `reading_date between ${formatedTargetedDate} - interval '${timeCondition}' and ${formatedTargetedDate}`
+        )
+        .orderBy("reading_date")
+        .then((data) =>
+          trx
+            .select(
+              "internal_temperature",
+              "external_temperature",
+              "humidity",
+              "weight",
+              "solar_panel_voltage",
+              "battery",
+              "reading_date"
+            )
+            .from("hive_readings")
+            .where("hive_id", hive_id)
+            .orderBy("reading_date")
+            .limit(1)
+            .then((lastData) => {
+              if (!data[0] && !lastData[0])
+                return res.json({ error: "No readings available!" });
 
-      return res.json(data);
-    })
+              return res.json({ data, lastData });
+            })
+            .catch((error) => {
+              console.log(error);
+              return res.status(500).json({ error: "Internal server error." });
+            })
+        )
+        .then(trx.commit)
+        .catch(trx.rollback)
+    )
     .catch((error) => {
       console.log(error);
       res.status(500).json({ error: "Internal server error." });
     });
 
-const handleGetHiveData = (db) => (req, res) => {
+const handleGetHiveData = (db) => async (req, res) => {
   const { hive_id, type, targetedDate } = req.body;
   const { user_id } = req.user;
 
@@ -126,50 +206,43 @@ const handleGetHiveData = (db) => (req, res) => {
 
   const formatedTargetedDate = `to_timestamp('${new Date(
     targetedDate || Date.now()
-  ).toISOString()}', 'YYYY-MM-DD')`;
+  )
+    .toISOString()
+    .slice(0, -1)}', 'YYYY-MM-DD T HH24:MI')`;
 
-  return db
-    .select("hive_user_id")
-    .from("user_hives")
-    .where({
+  const isHiveAssociated = await verifyHiveAccess(db, user_id, hive_id);
+  const { access, message, httpCode } = isHiveAssociated;
+
+  if (!access) return res.status(httpCode).json({ error: message });
+
+  // If the readings interval is one year, return the weekly average
+  if (type === 4)
+    return getWeeksAverage(
+      db,
       hive_id,
-      hive_user_id: user_id,
-    })
-    .then((data) => {
-      if (!data[0])
-        return res.status(401).json({
-          error: "You do not have permission to access this hive readings.",
-        });
+      timeCondition,
+      formatedTargetedDate,
+      res
+    );
 
-      // If the readings interval is one year, return the weekly average
-      if (type === 4)
-        return getWeeksAverage(
-          db,
-          hive_id,
-          timeCondition,
-          formatedTargetedDate,
-          res
-        );
+  // If the readings interval is one month or week, return the respective daily average
+  if (type === 2 || type === 3)
+    return getDaysAveraged(
+      db,
+      hive_id,
+      timeCondition,
+      formatedTargetedDate,
+      res
+    );
 
-      // If the readings interval is one month or week, return the respective daily average
-      if (type === 2 || type === 3)
-        return getDaysAveraged(
-          db,
-          hive_id,
-          timeCondition,
-          formatedTargetedDate,
-          res
-        );
-
-      // If the readings interval is one hour or day, return every data stored
-      return getDataFromLastHours(
-        db,
-        hive_id,
-        timeCondition,
-        formatedTargetedDate,
-        res
-      );
-    });
+  // If the readings interval is one hour or day, return every data stored
+  return getDataFromLastHours(
+    db,
+    hive_id,
+    timeCondition,
+    formatedTargetedDate,
+    res
+  );
 };
 
 module.exports = { handleGetHiveData };

@@ -4,3 +4,4 @@
 \i '/docker-entrypoint-initdb.d/schemas/hives.sql'
 \i '/docker-entrypoint-initdb.d/schemas/user_hives.sql'
 \i '/docker-entrypoint-initdb.d/schemas/hive_readings.sql'
+\i '/docker-entrypoint-initdb.d/schemas/hive_notes.sql'

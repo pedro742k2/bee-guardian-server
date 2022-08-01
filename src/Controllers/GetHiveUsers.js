@@ -9,7 +9,6 @@ const handleGetHiveUsers = (db) => (req, res) => {
       hive_user_id: user_id,
     })
     .then((data) => {
-      console.log(data);
       if (data[0].hive_id !== hive_id)
         return res.status(301).json({
           error: "You do not have permission to access this hive info",

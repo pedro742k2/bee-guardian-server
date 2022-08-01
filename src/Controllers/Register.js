@@ -40,7 +40,7 @@ const handleRegister = (db, bcrypt) => (req, res) => {
             })
             .returning("*")
             .then((data) => {
-              const token = signToken(data[0].user_id);
+              const token = signToken(data[0].user_id, "1d");
 
               return res.json({
                 token,

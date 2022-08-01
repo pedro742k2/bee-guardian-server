@@ -13,6 +13,8 @@ const { handleGetUserProfile } = require("./Controllers/GetUserProfile");
 const { handleUpdateUserProfile } = require("./Controllers/UpdateUserProfile");
 const { handleUpdatePassword } = require("./Controllers/UpdatePassword");
 const { handleGetHiveUsers } = require("./Controllers/GetHiveUsers");
+const { handleAddHiveNote } = require("./Controllers/AddHiveNote");
+const { handleUpdateTareWeight } = require("./Controllers/UpdateTareWeight");
 
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
@@ -60,5 +62,11 @@ router.put("/update-password", auth, handleUpdatePassword(db, bcrypt));
 
 // Get the users associated with a hive
 router.post("/get-hive-users", auth, handleGetHiveUsers(db));
+
+// Add a note to the hive
+router.post("/add-hive-note", auth, handleAddHiveNote(db));
+
+// Update the hive tare weight
+router.put("/update-tare-weight", auth, handleUpdateTareWeight(db));
 
 module.exports = router;
