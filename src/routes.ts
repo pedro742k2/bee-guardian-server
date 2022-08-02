@@ -1,20 +1,20 @@
-const knex = require("knex");
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const auth = require("./Middlewares/Auth");
-const { handleReceiveData } = require("./Controllers/ReceiveData");
-const { handleLogin } = require("./Controllers/Login");
-const { handleRegister } = require("./Controllers/Register");
-const { handleAddHive } = require("./Controllers/AddHive");
-const { handleGetHiveData } = require("./Controllers/GetHiveData");
-const { handleGetHives } = require("./Controllers/GetHives");
-const { handleRemoveHive } = require("./Controllers/RemoveHive");
-const { handleGetUserProfile } = require("./Controllers/GetUserProfile");
-const { handleUpdateUserProfile } = require("./Controllers/UpdateUserProfile");
-const { handleUpdatePassword } = require("./Controllers/UpdatePassword");
-const { handleGetHiveUsers } = require("./Controllers/GetHiveUsers");
-const { handleAddHiveNote } = require("./Controllers/AddHiveNote");
-const { handleUpdateTareWeight } = require("./Controllers/UpdateTareWeight");
+import knex from "knex";
+import express from "express";
+import bcrypt from "bcryptjs";
+import auth from "./Middlewares/Auth";
+import { handleReceiveData } from "./Controllers/ReceiveData";
+import { handleLogin } from "./Controllers/Login";
+import { handleRegister } from "./Controllers/Register";
+import { handleAddHive } from "./Controllers/AddHive";
+import { handleGetHiveData } from "./Controllers/GetHiveData";
+import { handleGetHives } from "./Controllers/GetHives";
+import { handleRemoveHive } from "./Controllers/RemoveHive";
+import { handleGetUserProfile } from "./Controllers/GetUserProfile";
+import { handleUpdateUserProfile } from "./Controllers/UpdateUserProfile";
+import { handleUpdatePassword } from "./Controllers/UpdatePassword";
+import { handleGetHiveUsers } from "./Controllers/GetHiveUsers";
+import { handleAddHiveNote } from "./Controllers/AddHiveNote";
+import { handleUpdateTareWeight } from "./Controllers/UpdateTareWeight";
 
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
@@ -28,7 +28,7 @@ const db = knex({
   },
 });
 
-const router = express.Router();
+export const router = express.Router();
 
 // Receive data from the eletronic device
 router.post("/receive-data", handleReceiveData(db));
@@ -68,5 +68,3 @@ router.post("/add-hive-note", auth, handleAddHiveNote(db));
 
 // Update the hive tare weight
 router.put("/update-tare-weight", auth, handleUpdateTareWeight(db));
-
-module.exports = router;

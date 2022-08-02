@@ -1,8 +1,8 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
 require("dotenv").config();
-const router = require("./routes");
+import { router } from "./routes";
 
 const server = express();
 

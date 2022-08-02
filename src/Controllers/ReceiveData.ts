@@ -1,6 +1,10 @@
+import { Response } from "express";
+import { Knex } from "knex";
+import { IReq } from "src/Types/request";
+
 const { readingsValidation } = require("../Validations/inputSyntax");
 
-const handleReceiveData = (db) => (req, res) => {
+export const handleReceiveData = (db: Knex) => (req: IReq, res: Response) => {
   // Argumentos enviados pelo Arduino.
   const {
     hive_id,
@@ -43,13 +47,10 @@ const handleReceiveData = (db) => (req, res) => {
         success: true,
       })
     )
-    .catch((error) => {
-      console.log(error);
+    .catch((error: Error) => {
       return res.status(500).json({
         error: true,
         errorCode: error,
       });
     });
 };
-
-module.exports = { handleReceiveData };

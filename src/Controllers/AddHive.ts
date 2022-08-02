@@ -1,4 +1,8 @@
-const handleAddHive = (db) => (req, res) => {
+import { Response } from "express";
+import { Knex } from "knex";
+import { IReq } from "src/Types/request";
+
+export const handleAddHive = (db: Knex) => (req: IReq, res: Response) => {
   const { hive_id, hive_details } = req.body;
   const { user_id } = req.user;
 
@@ -38,7 +42,7 @@ const handleAddHive = (db) => (req, res) => {
                 .insert({ hive_id, hive_user_id: user_id })
                 .then(() => res.json({ message: "Hive added successfully" }))
             )
-            .catch((error) =>
+            .catch(() =>
               res.status(500).json({ error: "Internal Server Error" })
             );
 
@@ -54,7 +58,7 @@ const handleAddHive = (db) => (req, res) => {
                 return trx("user_hives")
                   .insert({ hive_id, hive_user_id: user_id })
                   .then(() => res.json({ message: "Hive added successfully" }))
-                  .catch((error) =>
+                  .catch(() =>
                     res.status(500).json({ error: "Internal Server Error" })
                   );
 
@@ -62,7 +66,7 @@ const handleAddHive = (db) => (req, res) => {
                 .status(400)
                 .json({ message: "This hive is already added" });
             })
-            .catch((error) =>
+            .catch(() =>
               res.status(500).json({ error: "Internal Server Error" })
             );
 
@@ -87,14 +91,13 @@ const handleAddHive = (db) => (req, res) => {
                         message: "Hive and description added successfully",
                       })
                     )
-                    .catch((error) =>
+                    .catch(() =>
                       res.status(500).json({ error: "Internal Server Error" })
                     );
 
                 return res.json({ message: "Description updated" });
               })
-              .catch((error) => {
-                console.log(error);
+              .catch(() => {
                 res.status(500).json({ error: "Internal Server Error" });
               })
           );
@@ -103,5 +106,3 @@ const handleAddHive = (db) => (req, res) => {
       .catch(trx.rollback)
   );
 };
-
-module.exports = { handleAddHive };

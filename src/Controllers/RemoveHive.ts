@@ -1,4 +1,8 @@
-const handleRemoveHive = (db) => (req, res) => {
+import { Response } from "express";
+import { Knex } from "knex";
+import { IReq } from "src/Types/request";
+
+export const handleRemoveHive = (db: Knex) => (req: IReq, res: Response) => {
   const { hive_id } = req.body;
   const { user_id } = req.user;
 
@@ -20,5 +24,3 @@ const handleRemoveHive = (db) => (req, res) => {
       res.status(500).json({ error: "Internal Server Error" });
     });
 };
-
-module.exports = { handleRemoveHive };

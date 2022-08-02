@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const signToken = (user_id, expiresIn) =>
+export const signToken = (user_id: number, expiresIn: number) =>
   jwt.sign(
     {
       user_id,
@@ -10,5 +10,3 @@ const signToken = (user_id, expiresIn) =>
       expiresIn,
     }
   );
-
-module.exports = { signToken };

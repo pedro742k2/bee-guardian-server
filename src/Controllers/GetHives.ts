@@ -1,4 +1,8 @@
-const handleGetHives = (db) => (req, res) => {
+import { Response } from "express";
+import { Knex } from "knex";
+import { IReq } from "src/Types/request";
+
+export const handleGetHives = (db: Knex) => (req: IReq, res: Response) => {
   const { user_id } = req.user;
 
   return db("hives")
@@ -9,7 +13,5 @@ const handleGetHives = (db) => (req, res) => {
     .then((data) => {
       return res.json(data);
     })
-    .catch((error) => res.status(500).json({ error: "Internal Server Error" }));
+    .catch(() => res.status(500).json({ error: "Internal Server Error" }));
 };
-
-module.exports = { handleGetHives };

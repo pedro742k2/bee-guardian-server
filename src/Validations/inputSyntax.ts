@@ -1,4 +1,4 @@
-const joi = require("joi");
+import joi from "joi";
 
 // Readings Constraints
 const weightConstraints = joi.number().min(0).required();
@@ -15,8 +15,25 @@ const passwordConstraint = joi.string().alphanum().min(6).required();
 const emailConstraint = joi.string().email().required();
 const phoneConstraint = joi.string().min(9).max(9).required();
 
+interface IReadingsValidation {
+  weight: number;
+  internal_temperature: number;
+  external_temperature: number;
+  humidity: number;
+  battery: number;
+  solar_panel_voltage: number;
+}
+
+interface IUser {
+  name?: string;
+  username?: string;
+  email?: string;
+  password?: string;
+  phone?: string;
+}
+
 // Readings Validation
-const readingsValidation = (body) =>
+export const readingsValidation = (body: IReadingsValidation) =>
   joi
     .object({
       weight: weightConstraints,
@@ -29,19 +46,19 @@ const readingsValidation = (body) =>
     .validate(body);
 
 // Register Validation
-const registerValidation = (body) =>
+export const registerValidation = (body: IUser) =>
   joi
     .object({
       name: nameConstraint,
       username: usernameConstraint,
-      password: passwordConstraint,
       email: emailConstraint,
+      password: passwordConstraint,
       phone: phoneConstraint,
     })
     .validate(body);
 
 // Update Password Validation
-const passwordValidation = (body) =>
+export const passwordValidation = (body: IUser) =>
   joi
     .object({
       password: passwordConstraint,
@@ -49,7 +66,7 @@ const passwordValidation = (body) =>
     .validate(body);
 
 // Update User Validation
-const updateUserValidation = (body) =>
+export const updateUserValidation = (body: IUser) =>
   joi
     .object({
       name: nameConstraint,
@@ -57,10 +74,3 @@ const updateUserValidation = (body) =>
       phone: phoneConstraint,
     })
     .validate(body);
-
-module.exports = {
-  readingsValidation,
-  registerValidation,
-  passwordValidation,
-  updateUserValidation,
-};

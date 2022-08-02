@@ -1,4 +1,6 @@
-const verifyHiveAccess = (db, user_id, hive_id) =>
+import { Knex } from "knex";
+
+export const verifyHiveAccess = (db: Knex, user_id: number, hive_id: number) =>
   db("user_hives")
     .select("hive_id")
     .where({
@@ -17,10 +19,8 @@ const verifyHiveAccess = (db, user_id, hive_id) =>
         access: true,
       };
     })
-    .catch((error) => ({
+    .catch(() => ({
       access: false,
       message: "Internal Server Error",
       httpCode: 500,
     }));
-
-module.exports = { verifyHiveAccess };

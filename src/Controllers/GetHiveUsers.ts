@@ -1,4 +1,8 @@
-const handleGetHiveUsers = (db) => (req, res) => {
+import { Response } from "express";
+import { Knex } from "knex";
+import { IReq } from "src/Types/request";
+
+export const handleGetHiveUsers = (db: Knex) => (req: IReq, res: Response) => {
   const { hive_id } = req.body;
   const { user_id } = req.user;
 
@@ -20,11 +24,7 @@ const handleGetHiveUsers = (db) => (req, res) => {
         .select("login.email", "users.name")
         .where({ hive_id })
         .then((data) => res.json(data))
-        .catch((error) =>
-          res.status(500).json({ error: "Internal Server Error" })
-        );
+        .catch(() => res.status(500).json({ error: "Internal Server Error" }));
     })
-    .catch((error) => res.json({ error: "Internal Server Error" }));
+    .catch(() => res.json({ error: "Internal Server Error" }));
 };
-
-module.exports = { handleGetHiveUsers };

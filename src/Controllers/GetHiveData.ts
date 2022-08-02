@@ -1,11 +1,15 @@
+import { Response } from "express";
+import { Knex } from "knex";
+import { IReq } from "src/Types/request";
+
 const { verifyHiveAccess } = require("../Validations/verifyHiveAccess");
 
 const getWeeksAverage = (
-  db,
-  hive_id,
-  timeCondition,
-  formatedTargetedDate,
-  res
+  db: Knex,
+  hive_id: number,
+  timeCondition: string,
+  formatedTargetedDate: string,
+  res: Response
 ) =>
   db
     .transaction((trx) =>
@@ -57,11 +61,11 @@ const getWeeksAverage = (
     });
 
 const getDaysAveraged = (
-  db,
-  hive_id,
-  timeCondition,
-  formatedTargetedDate,
-  res
+  db: Knex,
+  hive_id: number,
+  timeCondition: string,
+  formatedTargetedDate: string,
+  res: Response
 ) =>
   db
     .transaction((trx) =>
@@ -113,11 +117,11 @@ const getDaysAveraged = (
     });
 
 const getDataFromLastHours = (
-  db,
-  hive_id,
-  timeCondition,
-  formatedTargetedDate,
-  res
+  db: Knex,
+  hive_id: number,
+  timeCondition: string,
+  formatedTargetedDate: string,
+  res: Response
 ) =>
   db
     .transaction((trx) =>
@@ -171,78 +175,77 @@ const getDataFromLastHours = (
       res.status(500).json({ error: "Internal server error." });
     });
 
-const handleGetHiveData = (db) => async (req, res) => {
-  const { hive_id, type, targetedDate } = req.body;
-  const { user_id } = req.user;
+export const handleGetHiveData =
+  (db: Knex) => async (req: IReq, res: Response) => {
+    const { hive_id, type, targetedDate } = req.body;
+    const { user_id } = req.user;
 
-  /*
+    /*
   0 -> Specific or last hour (retorn every stored reading)
   1 -> Specific or last day (retorn every stored reading)
   2 -> Specific or last week (return seven days average)
   3 -> Specific or last month (return 30 days average)
   4 -> Specific or last year (return year weeks average)
   */
-  let timeCondition = "";
+    let timeCondition = "";
 
-  switch (type) {
-    case 0:
-      timeCondition = "1 hour";
-      break;
-    case 1:
-      timeCondition = "24 hours";
-      break;
-    case 2:
-      timeCondition = "1 week";
-      break;
-    case 3:
-      timeCondition = "1 month";
-      break;
-    case 4:
-      timeCondition = "1 year";
-      break;
-    default:
-      return res.status(400).json({ error: "Invalid reading type" });
-  }
+    switch (type) {
+      case 0:
+        timeCondition = "1 hour";
+        break;
+      case 1:
+        timeCondition = "24 hours";
+        break;
+      case 2:
+        timeCondition = "1 week";
+        break;
+      case 3:
+        timeCondition = "1 month";
+        break;
+      case 4:
+        timeCondition = "1 year";
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid reading type" });
+    }
 
-  const formatedTargetedDate = `to_timestamp('${new Date(
-    targetedDate || Date.now()
-  )
-    .toISOString()
-    .slice(0, -1)}', 'YYYY-MM-DD T HH24:MI')`;
+    const formatedTargetedDate = `to_timestamp('${new Date(
+      targetedDate || Date.now()
+    )
+      .toISOString()
+      .slice(0, -1)}', 'YYYY-MM-DD T HH24:MI')`;
 
-  const isHiveAssociated = await verifyHiveAccess(db, user_id, hive_id);
-  const { access, message, httpCode } = isHiveAssociated;
+    const isHiveAssociated = await verifyHiveAccess(db, user_id, hive_id);
+    const { access, message, httpCode } = isHiveAssociated;
 
-  if (!access) return res.status(httpCode).json({ error: message });
+    if (!access) return res.status(httpCode).json({ error: message });
 
-  // If the readings interval is one year, return the weekly average
-  if (type === 4)
-    return getWeeksAverage(
+    // If the readings interval is one year, return the weekly average
+    if (type === 4)
+      return getWeeksAverage(
+        db,
+        hive_id,
+        timeCondition,
+        formatedTargetedDate,
+        res
+      );
+
+    // If the readings interval is one month or week, return the respective daily average
+    if (type === 2 || type === 3)
+      return getDaysAveraged(
+        db,
+        hive_id,
+        timeCondition,
+        formatedTargetedDate,
+        res
+      );
+
+    // If the readings interval is one hour or day, return every data stored
+    return getDataFromLastHours(
       db,
       hive_id,
       timeCondition,
       formatedTargetedDate,
       res
     );
-
-  // If the readings interval is one month or week, return the respective daily average
-  if (type === 2 || type === 3)
-    return getDaysAveraged(
-      db,
-      hive_id,
-      timeCondition,
-      formatedTargetedDate,
-      res
-    );
-
-  // If the readings interval is one hour or day, return every data stored
-  return getDataFromLastHours(
-    db,
-    hive_id,
-    timeCondition,
-    formatedTargetedDate,
-    res
-  );
-};
-
-module.exports = { handleGetHiveData };
+  };
