@@ -8,7 +8,7 @@ export const handleGetUserProfile =
 
     db("users")
       .join("login", "users.username", "login.username")
-      .select("name", "users.email", "phone")
+      .select("login.username", "name", "users.email", "phone", "join_date")
       .where("login.user_id", user_id)
       .then((data) => {
         if (!data[0])

@@ -38,7 +38,8 @@ export const handleRegister =
               join_date: new Date(),
             })
             .into("users")
-            .then(() =>
+            .returning("*")
+            .then((userData) =>
               trx("login")
                 .insert({
                   username,
@@ -46,11 +47,20 @@ export const handleRegister =
                   hash,
                 })
                 .returning("*")
-                .then((data) => {
-                  const token = signToken(data[0].user_id, "1d");
+                .then((loginData) => {
+                  const token = signToken(loginData[0].user_id, "1d");
+                  const { name, phone, join_date } = userData[0];
+                  const { username, email } = loginData[0];
 
                   return res.json({
                     token,
+                    profile: {
+                      username,
+                      email,
+                      name,
+                      phone,
+                      join_date,
+                    },
                   });
                 })
                 .catch(() => {
@@ -65,6 +75,8 @@ export const handleRegister =
         .catch((error) => {
           if (error.code === "23505")
             return res.status(400).json({ error: error.detail });
+
+          console.log(error);
 
           return res.status(500).json({ error: "Internal server error." });
         });

@@ -8,10 +8,19 @@ export const handleLogin =
   (db: Knex, bcrypt: any) => (req: IReq, res: Response) => {
     const { user, password } = req.body;
 
-    db.select("hash", "user_id", "email")
-      .where("username", user)
-      .orWhere("email", user)
-      .from("login")
+    db("login")
+      .join("users", "users.username", "login.username")
+      .select(
+        "hash",
+        "user_id",
+        "login.username",
+        "login.email",
+        "users.name",
+        "users.phone",
+        "users.join_date"
+      )
+      .where("login.username", user)
+      .orWhere("login.email", user)
       .then((data) => {
         if (!data[0])
           return res.status(400).json({ error: "Wrong credentials" });
@@ -23,9 +32,17 @@ export const handleLogin =
               return res.status(400).json({ error: "Wrong credentials" });
 
             const token = signToken(data[0].user_id, "1d");
+            const { username, email, name, phone, join_date } = data[0];
 
             return res.json({
               token,
+              profile: {
+                username,
+                email,
+                name,
+                phone,
+                join_date,
+              },
             });
           })
           .catch(() =>
