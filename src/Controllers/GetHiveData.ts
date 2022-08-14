@@ -39,7 +39,7 @@ const getWeeksAverage = (
             )
             .from("hive_readings")
             .where("hive_id", hive_id)
-            .orderBy("reading_date")
+            .orderBy("reading_date", "desc")
             .limit(1)
             .then((lastData) => {
               if (!data[0] && !lastData[0])
@@ -95,7 +95,7 @@ const getDaysAveraged = (
             )
             .from("hive_readings")
             .where("hive_id", hive_id)
-            .orderBy("reading_date")
+            .orderBy("reading_date", "desc")
             .limit(1)
             .then((lastData) => {
               if (!data[0] && !lastData[0])
@@ -154,7 +154,7 @@ const getDataFromLastHours = (
             )
             .from("hive_readings")
             .where("hive_id", hive_id)
-            .orderBy("reading_date")
+            .orderBy("reading_date", "desc")
             .limit(1)
             .then((lastData) => {
               if (!data[0] && !lastData[0])
