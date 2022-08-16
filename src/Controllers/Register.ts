@@ -48,12 +48,21 @@ export const handleRegister =
                 })
                 .returning("*")
                 .then((loginData) => {
-                  const token = signToken(loginData[0].user_id, "1d");
+                  const token = signToken(
+                    loginData[0].user_id,
+                    "session_token"
+                  );
+                  const refresh_token = signToken(
+                    loginData[0].user_id,
+                    "refresh_token"
+                  );
+
                   const { name, phone, join_date } = userData[0];
                   const { username, email } = loginData[0];
 
                   return res.json({
                     token,
+                    refresh_token,
                     profile: {
                       username,
                       email,

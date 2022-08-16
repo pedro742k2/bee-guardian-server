@@ -15,6 +15,7 @@ import { handleUpdatePassword } from "./Controllers/UpdatePassword";
 import { handleGetHiveUsers } from "./Controllers/GetHiveUsers";
 import { handleAddHiveNote } from "./Controllers/AddHiveNote";
 import { handleUpdateTareWeight } from "./Controllers/UpdateTareWeight";
+import { handleRefreshToken } from "./utils/RefreshToken";
 
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
@@ -32,6 +33,9 @@ export const router = express.Router();
 
 // Receive data from the eletronic device
 router.post("/receive-data", handleReceiveData(db));
+
+// Refresh the JWT token if possible
+router.get("/refresh-token", handleRefreshToken);
 
 // Register and authenticate a new user
 router.post("/register", handleRegister(db, bcrypt));

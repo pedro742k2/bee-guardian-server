@@ -3,7 +3,6 @@ import { Knex } from "knex";
 import { IReq } from "src/Types/request";
 
 const { verifyHiveAccess } = require("../Validations/verifyHiveAccess");
-
 const getWeeksAverage = (
   db: Knex,
   hive_id: number,
@@ -16,7 +15,7 @@ const getWeeksAverage = (
       trx
         .select(
           db.raw(
-            `DATE_PART('week', reading_date) AS week, AVG(weight) AS avg_weight, AVG(internal_temperature) AS avg_int_temp, AVG(external_temperature) AS avg_ext_temp, AVG(humidity) as avg_humidity, AVG(battery) as avg_battery, AVG (solar_panel_voltage) AS avg_spv, COUNT(reading_id) as reading_numbers`
+            `DATE_PART('week', reading_date) AS week, AVG(weight) AS weight, AVG(internal_temperature) AS internal_temperature, AVG(external_temperature) AS external_temperature, AVG(humidity) as humidity, AVG(battery) as battery, AVG (solar_panel_voltage) AS solar_panel_voltage, COUNT(reading_id) as reading_numbers`
           )
         )
         .from("hive_readings")
@@ -72,7 +71,7 @@ const getDaysAveraged = (
       trx
         .select(
           db.raw(
-            "DATE_TRUNC('day', reading_date) AS day, AVG(weight) AS avg_weight, AVG(internal_temperature) AS avg_int_temp, AVG(external_temperature) AS avg_ext_temp, AVG(humidity) as avg_humidity, AVG(battery) as avg_battery, AVG (solar_panel_voltage) AS avg_spv, COUNT(reading_id) as reading_numbers"
+            "DATE_TRUNC('day', reading_date) AS day, AVG(weight) AS weight, AVG(internal_temperature) AS internal_temperature, AVG(external_temperature) AS external_temperature, AVG(humidity) as humidity, AVG(battery) as battery, AVG (solar_panel_voltage) AS solar_panel_voltage, COUNT(reading_id) as reading_numbers"
           )
         )
         .from("hive_readings")

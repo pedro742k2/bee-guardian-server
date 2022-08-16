@@ -2,7 +2,7 @@ import { Response } from "express";
 import { Knex } from "knex";
 import { IReq } from "src/Types/request";
 
-const { signToken } = require("../Validations/signToken");
+import { signToken } from "../Validations/signToken";
 
 export const handleLogin =
   (db: Knex, bcrypt: any) => (req: IReq, res: Response) => {
@@ -31,11 +31,14 @@ export const handleLogin =
             if (!success)
               return res.status(400).json({ error: "Wrong credentials" });
 
-            const token = signToken(data[0].user_id, "1d");
+            const token = signToken(data[0].user_id, "session_token");
+            const refresh_token = signToken(data[0].user_id, "refresh_token");
+
             const { username, email, name, phone, join_date } = data[0];
 
             return res.json({
               token,
+              refresh_token,
               profile: {
                 username,
                 email,
