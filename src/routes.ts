@@ -16,6 +16,7 @@ import { handleGetHiveUsers } from "./Controllers/GetHiveUsers";
 import { handleAddHiveNote } from "./Controllers/AddHiveNote";
 import { handleUpdateTareWeight } from "./Controllers/UpdateTareWeight";
 import { handleRefreshToken } from "./utils/RefreshToken";
+import { handleMockToDB } from "./Controllers/Tests/mockToDB";
 
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
@@ -30,6 +31,8 @@ const db = knex({
 });
 
 export const router = express.Router();
+
+router.post("/upload-mock-to-db", handleMockToDB(db));
 
 // Receive data from the eletronic device
 router.post("/receive-data", handleReceiveData(db));
