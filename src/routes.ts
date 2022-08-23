@@ -18,7 +18,10 @@ import { handleUpdateTareWeight } from "./Controllers/UpdateTareWeight";
 import { handleRefreshToken } from "./utils/RefreshToken";
 import { handleMockToDB } from "./Controllers/Tests/mockToDB";
 
+/* Development environment DB variables */
 // const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+
+/* Production environment DB variable */
 const { DATABASE_URL } = process.env;
 
 const db = knex({

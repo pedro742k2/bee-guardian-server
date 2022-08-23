@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 require("dotenv").config();
@@ -16,3 +16,6 @@ app.use(
 app.use(express.json());
 app.use(helmet());
 app.use("/api/", router);
+app.get("/", (_, res: Response) =>
+  res.json({ message: "Welcome to the Bee Guardian API" })
+);
