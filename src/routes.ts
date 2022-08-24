@@ -41,6 +41,8 @@ const db = knex({
   },
 });
 
+db("users").select("*").from("users").then(console.log).catch(console.error);
+
 export const router = express.Router();
 
 router.post("/upload-mock-to-db", handleMockToDB(db));
