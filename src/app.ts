@@ -17,7 +17,6 @@ app.use(cors());
 app.use(express.json());
 app.use(helmet());
 app.use("/api/", router);
-app.get("/", (_, res: Response) => {
-  console.log("Received request on root");
-  return res.json({ message: "Welcome to the Bee Guardian API" });
-});
+app.get("/", (_, res: Response) =>
+  res.json({ message: "Welcome to the Bee Guardian API" })
+);
