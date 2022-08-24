@@ -29,14 +29,14 @@ console.log(DATABASE_URL);
 const db = knex({
   client: "pg",
 
-  connection: DATABASE_URL,
-
-  /* connection: {
-    host: DB_HOST,
+  connection: {
+    connectionString: DATABASE_URL,
+    ssl: true,
+    /* host: DB_HOST,
     user: DB_USER,
     password: DB_PASSWORD,
-    database: DB_NAME,
-  }, */
+    database: DB_NAME, */
+  },
 });
 
 export const router = express.Router();
