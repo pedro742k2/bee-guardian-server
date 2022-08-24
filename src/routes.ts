@@ -24,6 +24,8 @@ import { handleMockToDB } from "./Controllers/Tests/mockToDB";
 /* Production environment DB variable */
 const { DATABASE_URL } = process.env;
 
+console.log(DATABASE_URL);
+
 const db = knex({
   client: "pg",
 
