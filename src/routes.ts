@@ -31,7 +31,9 @@ const db = knex({
 
   connection: {
     connectionString: DATABASE_URL,
-    ssl: true,
+    ssl: {
+      rejectUnauthorized: false,
+    },
     /* host: DB_HOST,
     user: DB_USER,
     password: DB_PASSWORD,
