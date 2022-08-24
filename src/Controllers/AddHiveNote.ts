@@ -25,13 +25,25 @@ export const handleAddHiveNote =
                 .status(400)
                 .json({ error: "This note already exists." });
 
-            return trx("hive_notes")
-              .insert({ hive_id, note })
-              .returning("note")
-              .then((data) => res.json(data))
-              .catch(() =>
-                res.status(500).json({ error: "Internal Server Error" })
-              );
+            return trx("login")
+              .join("users", "login.username", "users.username")
+              .select("users.name")
+              .where({ user_id })
+              .then((name) => {
+                return trx("hive_notes")
+                  .insert({
+                    hive_id,
+                    note,
+                    added_by: name[0]?.name,
+                    added_date: new Date().toISOString(),
+                  })
+                  .returning("note")
+                  .then((data) => res.json(data))
+                  .catch(() =>
+                    res.status(500).json({ error: "Internal Server Error" })
+                  );
+              })
+              .catch();
           })
           .then(trx.commit)
           .catch(trx.rollback)

@@ -17,31 +17,34 @@ import { handleAddHiveNote } from "./Controllers/AddHiveNote";
 import { handleUpdateTareWeight } from "./Controllers/UpdateTareWeight";
 import { handleRefreshToken } from "./utils/RefreshToken";
 import { handleMockToDB } from "./Controllers/Tests/mockToDB";
+import { handleGetHiveNotes } from "./Controllers/GetHiveNotes";
+import { handleRemoveHiveNote } from "./Controllers/RemoveHiveNote";
 
-/* Development environment DB variables */
-// const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DATABASE_URL, NODE_ENV } =
+  process.env;
 
-/* Production environment DB variable */
-const { DATABASE_URL } = process.env;
+console.log(NODE_ENV);
 
-console.log(DATABASE_URL);
+const DB_CONNECTION_CONFIG =
+  NODE_ENV === "production"
+    ? {
+        connectionString: DATABASE_URL,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }
+    : {
+        host: DB_HOST,
+        user: DB_USER,
+        password: DB_PASSWORD,
+        database: DB_NAME,
+      };
 
 const db = knex({
   client: "pg",
 
-  connection: {
-    connectionString: DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-    /* host: DB_HOST,
-    user: DB_USER,
-    password: DB_PASSWORD,
-    database: DB_NAME, */
-  },
+  connection: DB_CONNECTION_CONFIG,
 });
-
-db("users").select("*").from("users").then(console.log).catch(console.error);
 
 export const router = express.Router();
 
@@ -85,6 +88,12 @@ router.post("/get-hive-users", auth, handleGetHiveUsers(db));
 
 // Add a note to the hive
 router.post("/add-hive-note", auth, handleAddHiveNote(db));
+
+// Get the hive notes
+router.post("/get-hive-notes", auth, handleGetHiveNotes(db));
+
+// Remove hive note
+router.delete("/remove-hive-note", auth, handleRemoveHiveNote(db));
 
 // Update the hive tare weight
 router.put("/update-tare-weight", auth, handleUpdateTareWeight(db));

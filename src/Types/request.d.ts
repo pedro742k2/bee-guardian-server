@@ -8,6 +8,7 @@ export interface IReq extends Request {
     hive_id: number;
     hive_details: string;
     note: string;
+    note_id: number;
     type: number;
     targetedDate: string;
     user: string;
