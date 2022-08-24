@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/pedro742k2/bee-guardian-server/issues"
   },
-  "homepage": "https://bee-guardian-backend.herokuapp.com",
+  "homepage": "https://bee-guardian-server.herokuapp.com",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
