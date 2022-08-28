@@ -10,7 +10,7 @@ export const handleMockToDB = (db: Knex) => (req: IReq, res: Response) => {
 
   return db.transaction((trx) =>
     trx("hive_readings")
-      .truncate()
+      // .truncate()
       .then(() =>
         trx
           .raw(mocks_query)
