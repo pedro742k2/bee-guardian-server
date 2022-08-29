@@ -23,8 +23,6 @@ import { handleRemoveHiveNote } from "./Controllers/RemoveHiveNote";
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DATABASE_URL, NODE_ENV } =
   process.env;
 
-console.log(NODE_ENV);
-
 const DB_CONNECTION_CONFIG =
   NODE_ENV === "production"
     ? {
