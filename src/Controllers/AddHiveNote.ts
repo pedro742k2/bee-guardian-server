@@ -9,9 +9,6 @@ export const handleAddHiveNote =
     const { user_id } = req.user;
     const { hive_id, note } = req.body;
 
-    if (!note.trim())
-      return res.status(400).json({ error: "Empty note not added." });
-
     const isHiveAssociated = await verifyHiveAccess(db, user_id, hive_id);
     const { access, message, httpCode } = isHiveAssociated;
 
