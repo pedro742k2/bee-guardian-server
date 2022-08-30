@@ -11,9 +11,8 @@ This project allows the beekeepers not to have to wear a special suit and move e
   
 ## How to test
 
-### 🌎 Bee Project is available online:
-  - 📝 **Note:** The web page may take some time to load because it's using the free [Heroku](https://www.heroku.com/) tier [(Click here to see why)](https://blog.heroku.com/app_sleeping_on_heroku#:~:text=When%20Do%20Apps,put%20to%20sleep.)
-  - 📡 Live web app: (**In maintenance. Will be available soon...**)
+### 🌎 Bee Guardian Project is available online:
+  - 📡 Live web app: [Click here](https://pedro742k2.github.io/bee-guardian-webapp)
   
 ### 🐋 If you want to test it locally using Docker:
   - Clone the repository;
@@ -32,9 +31,11 @@ This project allows the beekeepers not to have to wear a special suit and move e
 
 ### Frontend ([Repository](https://github.com/pedro742k2/bee-project))
   - React.js
+  - Typescript
 
 ### Backend
   - Node.js
+  - Typescript
   - Express
   - Bcrypt
   - JSON Web Token
