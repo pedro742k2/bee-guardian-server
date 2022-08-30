@@ -1,7 +1,7 @@
 # 🐝 Bee Guardian Project
 
 ### Note
-- This is the back-end (API Server) repository of the Bee Guardian Project. To access the front-end repository [click here](https://github.com/pedro742k2/bee-guardian-webapp)
+- This is the back-end (API Server) repository of the Bee Guardian Project. To access the front-end repository [click here](https://github.com/pedro742k2/bee-guardian-webapp).
 
 ## 🍯 What is the Bee Project and what is it used for
 
