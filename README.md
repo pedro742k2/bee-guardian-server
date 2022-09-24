@@ -9,6 +9,27 @@ Bee Guardian is a React web app with the goal of speeding up the process of chec
 <br/><br/>
 This project allows the beekeepers not to have to wear a special suit and move every day or week to the location of the hive(s) just to check if they are in place and producing.
   
+ 
+## Web App Screenshots (Dashboard page only)
+
+### Dashboard Navigation
+<img width="980" alt="dashboard navigation" src="https://user-images.githubusercontent.com/54741310/192089981-aa2d9bfd-754b-4808-ad21-beebf117cbc1.png">
+
+### Hive Selector
+<img width="980" alt="hive selector" src="https://user-images.githubusercontent.com/54741310/192089811-e2ae483d-9c5b-4118-b05b-0630c13d2abf.png">
+
+### Last Readings & Add Hive Menu
+<img width="980" alt="last readings   add hive" src="https://user-images.githubusercontent.com/54741310/192089834-0ace284c-1a5e-4863-a22a-4350d1129821.png">
+
+### Chart Reading Options
+<img width="980" alt="chart options selector" src="https://user-images.githubusercontent.com/54741310/192089851-d6b484aa-0ec8-4b45-9fab-ce7f07bf6711.png">
+
+### Hive Readings
+<img width="980" alt="chart readings" src="https://user-images.githubusercontent.com/54741310/192089874-80901bb5-b221-4283-897d-6eab04f0cd38.png">
+
+### Hive Notes
+<img width="980" alt="hive notes" src="https://user-images.githubusercontent.com/54741310/192089882-6c5403a3-39ff-4ad8-807c-a26389efbe08.png">
+  
 ## How to test
 
 ### 🌎 Bee Guardian Project is available online:
