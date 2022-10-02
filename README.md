@@ -68,4 +68,5 @@ This project allows the beekeepers not to have to wear a special suit and move e
   - Express
   - Bcrypt
   - JSON Web Token
-  - Database: PostgreSQL, Redis
+  - *Relational SQL Database*: PostgreSQL
+  - *Non-Relational key-value Database*: Redis *(chache purposes)*
