@@ -4,11 +4,16 @@ import { IReq } from "src/Types/request";
 import { verifyHiveAccess } from "../Validations/verifyHiveAccess";
 
 export const handleRemoveHiveNote =
-  (db: Knex) => async (req: IReq, res: Response) => {
+  (db: Knex, redisClient: any) => async (req: IReq, res: Response) => {
     const { user_id } = req.user;
     const { note_id, hive_id } = req.body;
 
-    const isHiveAssociated = await verifyHiveAccess(db, user_id, hive_id);
+    const isHiveAssociated = await verifyHiveAccess(
+      db,
+      user_id,
+      hive_id,
+      redisClient
+    );
     const { access, message, httpCode } = isHiveAssociated;
 
     if (!access) return res.status(httpCode || 403).json({ error: message });

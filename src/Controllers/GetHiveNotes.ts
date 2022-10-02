@@ -4,14 +4,14 @@ import { IReq } from "src/Types/request";
 import { verifyHiveAccess } from "../Validations/verifyHiveAccess";
 
 export const handleGetHiveNotes =
-  (db: Knex) => async (req: IReq, res: Response) => {
+  (db: Knex, redisClient: any) => async (req: IReq, res: Response) => {
     const { user_id } = req.user;
     const { hive_id } = req.body;
 
     if (!user_id || !hive_id)
       return res.status(400).json({ message: "Invalid parameters." });
 
-    const hasAccess = await verifyHiveAccess(db, user_id, hive_id);
+    const hasAccess = await verifyHiveAccess(db, user_id, hive_id, redisClient);
 
     const { access, message, httpCode } = hasAccess;
 

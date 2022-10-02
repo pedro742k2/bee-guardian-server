@@ -2,14 +2,19 @@ import { Response } from "express";
 import { Knex } from "knex";
 import { IReq } from "src/Types/request";
 
-const { verifyHiveAccess } = require("../Validations/verifyHiveAccess");
+import { verifyHiveAccess } from "../Validations/verifyHiveAccess";
 
 export const handleAddHiveNote =
-  (db: Knex) => async (req: IReq, res: Response) => {
+  (db: Knex, redisClient: any) => async (req: IReq, res: Response) => {
     const { user_id } = req.user;
     const { hive_id, note } = req.body;
 
-    const isHiveAssociated = await verifyHiveAccess(db, user_id, hive_id);
+    const isHiveAssociated = await verifyHiveAccess(
+      db,
+      user_id,
+      hive_id,
+      redisClient
+    );
     const { access, message, httpCode } = isHiveAssociated;
 
     if (!access) return res.status(httpCode).json({ error: message });

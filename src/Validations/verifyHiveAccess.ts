@@ -1,7 +1,25 @@
+import { RedisClientType } from "@redis/client";
 import { Knex } from "knex";
 
-export const verifyHiveAccess = (db: Knex, user_id: number, hive_id: number) =>
-  db("user_hives")
+export const verifyHiveAccess = async (
+  db: Knex,
+  user_id: number,
+  hive_id: number,
+  redisClient: RedisClientType
+) => {
+  const cachedUserHiveAccess = await redisClient.sIsMember(
+    `user:${user_id}:hives`,
+    hive_id.toString()
+  );
+
+  if (cachedUserHiveAccess)
+    return {
+      access: true,
+      message: "ok",
+      httpCode: 200,
+    };
+
+  return db("user_hives")
     .select("hive_id")
     .where({
       hive_id,
@@ -15,8 +33,12 @@ export const verifyHiveAccess = (db: Knex, user_id: number, hive_id: number) =>
           httpCode: 403,
         };
 
+      redisClient.sAdd(`user:${user_id}:hives`, hive_id.toString());
+
       return {
         access: true,
+        message: "ok",
+        httpCode: 200,
       };
     })
     .catch(() => ({
@@ -24,3 +46,4 @@ export const verifyHiveAccess = (db: Knex, user_id: number, hive_id: number) =>
       message: "Internal Server Error",
       httpCode: 500,
     }));
+};

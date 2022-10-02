@@ -6,25 +6,6 @@ export const handleAddHive = (db: Knex) => (req: IReq, res: Response) => {
   const { hive_id, hive_details } = req.body;
   const { user_id } = req.user;
 
-  /* Funcionamento:
-  Verificar se colmeia já foi adicionada (em "hives")
-    Se sim:
-      Verificar se descrição ("hives.hive_details") é igual a ("req.body.hive_details")
-        Se sim:
-          TENTAR inserir colmeia (em "user_hives")
-            Se conseguir: RETORNA -> "Colmeia adicionada"
-            Se não conseguir: RETORNA -> "Esta comleia já está adicionada"
-        Se não:
-          Atualizar descrição (em "hives")
-          TENTAR inserir colmeia (em "user_hives")
-            Se conseguir: RETORNA -> "Colmeia adicionada e descrição atualizada"
-            Se não conseguir: RETORNA -> "Descrição atualizada"
-    Se não:
-      Inserir colmeia (em "hives")
-      Inserir colmeia (em "user_hives")
-      RETORNA -> "Colmeia adicionada"
-  */
-
   return db.transaction((trx) =>
     trx("hives")
       .select("hive_id", "hive_details")

@@ -7,6 +7,8 @@ services:
       - "4000:4000"
     volumes:
       - ./:/app
+    environment:
+      REDIS_URL: "redis://redis:6379"
 
   postgres:
     build: ./database

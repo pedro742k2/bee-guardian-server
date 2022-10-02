@@ -1,3 +1,4 @@
+import { createClient } from "redis";
 import knex from "knex";
 import express from "express";
 import bcrypt from "bcryptjs";
@@ -20,8 +21,15 @@ import { handleMockToDB } from "./Controllers/Tests/mockToDB";
 import { handleGetHiveNotes } from "./Controllers/GetHiveNotes";
 import { handleRemoveHiveNote } from "./Controllers/RemoveHiveNote";
 
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DATABASE_URL, NODE_ENV } =
-  process.env;
+const {
+  DB_HOST,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
+  DATABASE_URL,
+  REDIS_URL,
+  NODE_ENV,
+} = process.env;
 
 const DB_CONNECTION_CONFIG =
   NODE_ENV === "production"
@@ -43,6 +51,12 @@ const db = knex({
 
   connection: DB_CONNECTION_CONFIG,
 });
+
+const redisClient = createClient({
+  url: REDIS_URL,
+});
+redisClient.on("error", console.error);
+redisClient.connect();
 
 export const router = express.Router();
 
@@ -67,7 +81,7 @@ router.post("/add-hive", auth, handleAddHive(db));
 router.get("/get-hives", auth, handleGetHives(db));
 
 // Get the readings of an hive
-router.post("/get-hive-data", auth, handleGetHiveData(db));
+router.post("/get-hive-data", auth, handleGetHiveData(db, redisClient));
 
 // Remove an hive from a user
 router.delete("/remove-hive", auth, handleRemoveHive(db));
@@ -85,13 +99,17 @@ router.put("/update-password", auth, handleUpdatePassword(db, bcrypt));
 router.post("/get-hive-users", auth, handleGetHiveUsers(db));
 
 // Add a note to the hive
-router.post("/add-hive-note", auth, handleAddHiveNote(db));
+router.post("/add-hive-note", auth, handleAddHiveNote(db, redisClient));
 
 // Get the hive notes
-router.post("/get-hive-notes", auth, handleGetHiveNotes(db));
+router.post("/get-hive-notes", auth, handleGetHiveNotes(db, redisClient));
 
 // Remove hive note
-router.delete("/remove-hive-note", auth, handleRemoveHiveNote(db));
+router.delete("/remove-hive-note", auth, handleRemoveHiveNote(db, redisClient));
 
 // Update the hive tare weight
-router.put("/update-tare-weight", auth, handleUpdateTareWeight(db));
+router.put(
+  "/update-tare-weight",
+  auth,
+  handleUpdateTareWeight(db, redisClient)
+);

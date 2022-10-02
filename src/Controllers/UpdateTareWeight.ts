@@ -5,11 +5,16 @@ import { IReq } from "src/Types/request";
 const { verifyHiveAccess } = require("../Validations/verifyHiveAccess");
 
 export const handleUpdateTareWeight =
-  (db: Knex) => async (req: IReq, res: Response) => {
+  (db: Knex, redisClient: any) => async (req: IReq, res: Response) => {
     const { user_id } = req.user;
     const { hive_id, tare_weight } = req.body;
 
-    const isHiveAssociated = await verifyHiveAccess(db, user_id, hive_id);
+    const isHiveAssociated = await verifyHiveAccess(
+      db,
+      user_id,
+      hive_id,
+      redisClient
+    );
     const { access, message, httpCode } = isHiveAssociated;
 
     if (!access) return res.status(httpCode).json({ error: message });

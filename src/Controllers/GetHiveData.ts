@@ -1,8 +1,8 @@
 import { Response } from "express";
 import { Knex } from "knex";
 import { IReq } from "src/Types/request";
+import { verifyHiveAccess } from "../Validations/verifyHiveAccess";
 
-const { verifyHiveAccess } = require("../Validations/verifyHiveAccess");
 const getWeeksAverage = (
   db: Knex,
   hive_id: number,
@@ -175,7 +175,7 @@ const getDataFromLastHours = (
     });
 
 export const handleGetHiveData =
-  (db: Knex) => async (req: IReq, res: Response) => {
+  (db: Knex, redisClient: any) => async (req: IReq, res: Response) => {
     const { hive_id, type, targetedDate } = req.body;
     const { user_id } = req.user;
 
@@ -214,7 +214,12 @@ export const handleGetHiveData =
       .toISOString()
       .slice(0, -1)}', 'YYYY-MM-DD T HH24:MI')`;
 
-    const isHiveAssociated = await verifyHiveAccess(db, user_id, hive_id);
+    const isHiveAssociated = await verifyHiveAccess(
+      db,
+      user_id,
+      hive_id,
+      redisClient
+    );
     const { access, message, httpCode } = isHiveAssociated;
 
     if (!access) return res.status(httpCode).json({ error: message });
