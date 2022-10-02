@@ -9,8 +9,12 @@ import {
 import { IReq } from "src/Types/request";
 import { verifyHiveAccess } from "../Validations/verifyHiveAccess";
 
+const REDIS_EXPIRE_TIMEOUT = 60;
+
 const getWeeksAverage = (
+  type: number,
   db: Knex,
+  redisClient: RedisClientType<RedisFunctions, RedisModules, RedisScripts>,
   hive_id: number,
   timeCondition: string,
   formatedTargetedDate: string,
@@ -50,6 +54,10 @@ const getWeeksAverage = (
               if (!data[0] && !lastData[0])
                 return res.json({ error: "No readings available!" });
 
+              const REDIS_KEY = `hive_readings:${type}:${hive_id}`;
+              redisClient.set(REDIS_KEY, JSON.stringify({ data, lastData }));
+              redisClient.expire(REDIS_KEY, REDIS_EXPIRE_TIMEOUT);
+
               return res.json({ data, lastData });
             })
             .catch((error) => {
@@ -66,7 +74,9 @@ const getWeeksAverage = (
     });
 
 const getDaysAveraged = (
+  type: number,
   db: Knex,
+  redisClient: RedisClientType<RedisFunctions, RedisModules, RedisScripts>,
   hive_id: number,
   timeCondition: string,
   formatedTargetedDate: string,
@@ -106,6 +116,10 @@ const getDaysAveraged = (
               if (!data[0] && !lastData[0])
                 return res.json({ error: "No readings available!" });
 
+              const REDIS_KEY = `hive_readings:${type}:${hive_id}`;
+              redisClient.set(REDIS_KEY, JSON.stringify({ data, lastData }));
+              redisClient.expire(REDIS_KEY, REDIS_EXPIRE_TIMEOUT);
+
               return res.json({ data, lastData });
             })
             .catch((error) => {
@@ -122,7 +136,9 @@ const getDaysAveraged = (
     });
 
 const getDataFromLastHours = (
+  type: number,
   db: Knex,
+  redisClient: RedisClientType<RedisFunctions, RedisModules, RedisScripts>,
   hive_id: number,
   timeCondition: string,
   formatedTargetedDate: string,
@@ -164,6 +180,10 @@ const getDataFromLastHours = (
             .then((lastData) => {
               if (!data[0] && !lastData[0])
                 return res.json({ error: "No readings available!" });
+
+              const REDIS_KEY = `hive_readings:${type}:${hive_id}`;
+              redisClient.set(REDIS_KEY, JSON.stringify({ data, lastData }));
+              redisClient.expire(REDIS_KEY, REDIS_EXPIRE_TIMEOUT);
 
               return res.json({ data, lastData });
             })
@@ -234,10 +254,17 @@ export const handleGetHiveData =
 
     if (!access) return res.status(httpCode).json({ error: message });
 
+    const cachedResponse = await redisClient.get(
+      `hive_readings:${type}:${hive_id}`
+    );
+    if (cachedResponse) return res.json(JSON.parse(cachedResponse));
+
     // If the readings interval is one year, return the weekly average
     if (type === 4)
       return getWeeksAverage(
+        type,
         db,
+        redisClient,
         hive_id,
         timeCondition,
         formatedTargetedDate,
@@ -247,7 +274,9 @@ export const handleGetHiveData =
     // If the readings interval is one month or week, return the respective daily average
     if (type === 2 || type === 3)
       return getDaysAveraged(
+        type,
         db,
+        redisClient,
         hive_id,
         timeCondition,
         formatedTargetedDate,
@@ -256,7 +285,9 @@ export const handleGetHiveData =
 
     // If the readings interval is one hour or day, return every data stored
     return getDataFromLastHours(
+      type,
       db,
+      redisClient,
       hive_id,
       timeCondition,
       formatedTargetedDate,
