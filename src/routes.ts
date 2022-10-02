@@ -28,6 +28,7 @@ const {
   DB_NAME,
   DATABASE_URL,
   REDIS_URL,
+  REDISCLOUD_URL,
   NODE_ENV,
 } = process.env;
 
@@ -52,9 +53,15 @@ const db = knex({
   connection: DB_CONNECTION_CONFIG,
 });
 
-const redisClient = createClient({
-  url: REDIS_URL,
-});
+const redisClient = createClient(
+  NODE_ENV === "production"
+    ? {
+        url: REDISCLOUD_URL,
+      }
+    : {
+        url: REDIS_URL,
+      }
+);
 redisClient.on("error", console.error);
 redisClient.connect();
 
