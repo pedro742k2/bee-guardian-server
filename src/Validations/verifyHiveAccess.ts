@@ -1,11 +1,12 @@
 import { RedisClientType } from "@redis/client";
 import { Knex } from "knex";
+import { RedisFunctions, RedisModules, RedisScripts } from "redis";
 
 export const verifyHiveAccess = async (
   db: Knex,
   user_id: number,
   hive_id: number,
-  redisClient: RedisClientType
+  redisClient: RedisClientType<RedisFunctions, RedisModules, RedisScripts>
 ) => {
   const cachedUserHiveAccess = await redisClient.sIsMember(
     `user:${user_id}:hives`,

@@ -53,15 +53,9 @@ const db = knex({
   connection: DB_CONNECTION_CONFIG,
 });
 
-const redisClient = createClient(
-  NODE_ENV === "production"
-    ? {
-        url: REDISCLOUD_URL,
-      }
-    : {
-        url: REDIS_URL,
-      }
-);
+const redisClient = createClient({
+  url: NODE_ENV === "production" ? REDISCLOUD_URL : REDIS_URL,
+});
 redisClient.on("error", console.error);
 redisClient.connect();
 
@@ -91,7 +85,7 @@ router.get("/get-hives", auth, handleGetHives(db));
 router.post("/get-hive-data", auth, handleGetHiveData(db, redisClient));
 
 // Remove an hive from a user
-router.delete("/remove-hive", auth, handleRemoveHive(db));
+router.delete("/remove-hive", auth, handleRemoveHive(db, redisClient));
 
 // Get a user profile
 router.get("/get-user-profile", auth, handleGetUserProfile(db));

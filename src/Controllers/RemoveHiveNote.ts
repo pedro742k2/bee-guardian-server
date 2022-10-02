@@ -1,10 +1,20 @@
 import { Response } from "express";
 import { Knex } from "knex";
+import {
+  RedisClientType,
+  RedisFunctions,
+  RedisModules,
+  RedisScripts,
+} from "redis";
 import { IReq } from "src/Types/request";
 import { verifyHiveAccess } from "../Validations/verifyHiveAccess";
 
 export const handleRemoveHiveNote =
-  (db: Knex, redisClient: any) => async (req: IReq, res: Response) => {
+  (
+    db: Knex,
+    redisClient: RedisClientType<RedisFunctions, RedisModules, RedisScripts>
+  ) =>
+  async (req: IReq, res: Response) => {
     const { user_id } = req.user;
     const { note_id, hive_id } = req.body;
 

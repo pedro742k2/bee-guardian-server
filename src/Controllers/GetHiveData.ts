@@ -1,5 +1,11 @@
 import { Response } from "express";
 import { Knex } from "knex";
+import {
+  RedisClientType,
+  RedisFunctions,
+  RedisModules,
+  RedisScripts,
+} from "redis";
 import { IReq } from "src/Types/request";
 import { verifyHiveAccess } from "../Validations/verifyHiveAccess";
 
@@ -175,7 +181,11 @@ const getDataFromLastHours = (
     });
 
 export const handleGetHiveData =
-  (db: Knex, redisClient: any) => async (req: IReq, res: Response) => {
+  (
+    db: Knex,
+    redisClient: RedisClientType<RedisFunctions, RedisModules, RedisScripts>
+  ) =>
+  async (req: IReq, res: Response) => {
     const { hive_id, type, targetedDate } = req.body;
     const { user_id } = req.user;
 
