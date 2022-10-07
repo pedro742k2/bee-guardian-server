@@ -54,9 +54,11 @@ const getWeeksAverage = (
               if (!data[0] && !lastData[0])
                 return res.json({ error: "No readings available!" });
 
-              const REDIS_KEY = `hive_readings:${type}:${hive_id}`;
-              redisClient.set(REDIS_KEY, JSON.stringify({ data, lastData }));
-              redisClient.expire(REDIS_KEY, REDIS_EXPIRE_TIMEOUT);
+              if (data[0]) {
+                const REDIS_KEY = `hive_readings:${type}:${hive_id}`;
+                redisClient.set(REDIS_KEY, JSON.stringify({ data, lastData }));
+                redisClient.expire(REDIS_KEY, REDIS_EXPIRE_TIMEOUT);
+              }
 
               return res.json({ data, lastData });
             })
@@ -116,9 +118,11 @@ const getDaysAveraged = (
               if (!data[0] && !lastData[0])
                 return res.json({ error: "No readings available!" });
 
-              const REDIS_KEY = `hive_readings:${type}:${hive_id}`;
-              redisClient.set(REDIS_KEY, JSON.stringify({ data, lastData }));
-              redisClient.expire(REDIS_KEY, REDIS_EXPIRE_TIMEOUT);
+              if (data[0]) {
+                const REDIS_KEY = `hive_readings:${type}:${hive_id}`;
+                redisClient.set(REDIS_KEY, JSON.stringify({ data, lastData }));
+                redisClient.expire(REDIS_KEY, REDIS_EXPIRE_TIMEOUT);
+              }
 
               return res.json({ data, lastData });
             })
@@ -181,9 +185,11 @@ const getDataFromLastHours = (
               if (!data[0] && !lastData[0])
                 return res.json({ error: "No readings available!" });
 
-              const REDIS_KEY = `hive_readings:${type}:${hive_id}`;
-              redisClient.set(REDIS_KEY, JSON.stringify({ data, lastData }));
-              redisClient.expire(REDIS_KEY, REDIS_EXPIRE_TIMEOUT);
+              if (data[0]) {
+                const REDIS_KEY = `hive_readings:${type}:${hive_id}`;
+                redisClient.set(REDIS_KEY, JSON.stringify({ data, lastData }));
+                redisClient.expire(REDIS_KEY, REDIS_EXPIRE_TIMEOUT);
+              }
 
               return res.json({ data, lastData });
             })
@@ -238,12 +244,6 @@ export const handleGetHiveData =
         return res.status(400).json({ error: "Invalid reading type" });
     }
 
-    const formatedTargetedDate = `to_timestamp('${new Date(
-      targetedDate || Date.now()
-    )
-      .toISOString()
-      .slice(0, -1)}', 'YYYY-MM-DD T HH24:MI')`;
-
     const isHiveAssociated = await verifyHiveAccess(
       db,
       user_id,
@@ -258,6 +258,12 @@ export const handleGetHiveData =
       `hive_readings:${type}:${hive_id}`
     );
     if (cachedResponse) return res.json(JSON.parse(cachedResponse));
+
+    const formatedTargetedDate = `to_timestamp('${new Date(
+      targetedDate || Date.now()
+    )
+      .toISOString()
+      .slice(0, -1)}', 'YYYY-MM-DD T HH24:MI')`;
 
     // If the readings interval is one year, return the weekly average
     if (type === 4)
